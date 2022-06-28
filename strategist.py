@@ -1,3 +1,5 @@
+fudge_util = 4 # by artificially increasing the expected utility of flipping, we seem to do much better on the best runs
+
 def p_fair(h,t):
 	# Baysian probability of a fair blob given number of heads and tails
 	return (0.5**h*0.5**t)/(0.5**h*0.5**t + 0.75**h*0.25**t)
@@ -12,7 +14,7 @@ def E_flip(h,t):
 	p = p_fair(h,t)
 	p_head = 0.5*p + 0.75*(1-p)
 	p_tail = 1 - p_head
-	return 1 + (E_guess(h+1,t)*p_head + E_guess(h,t+1)*p_tail - E_guess(h,t))
+	return (E_guess(h+1,t)*p_head + E_guess(h,t+1)*p_tail - E_guess(h,t)) - 1 + fudge_util
 
 if __name__ == "__main__":
 

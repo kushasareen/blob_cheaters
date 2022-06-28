@@ -8,8 +8,11 @@ if __name__ == "__main__":
 	n = int(sys.argv[1])
 
 	results = [run_sim(verbose = False, keep_list = True) for _ in range(n)]
-	max_score = max([x[0] for x in results])
+	scores = [x[0] for x in results]
+	max_score = max(scores)
 	print("The max score was", max_score)
+	print("The average score was", int(np.mean(scores)), "+-", int(np.std(scores)))
+
 
 	for i in range(n):
 		plt.plot(results[i][2], results[i][1])
