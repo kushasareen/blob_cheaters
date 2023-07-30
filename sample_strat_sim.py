@@ -1,5 +1,27 @@
 import numpy as np
-from strategist import p_fair, E_guess, E_flip, build_E_flip_table
+
+def sample_strat(h,t):
+	if (h + t) % 5 != 0:
+		return "flip"
+
+	if h+t == 5 and h == 5:
+		return "guess cheater"
+	elif h+t == 5 and (t == 5 or t == 4):
+		return "guess fair"
+	elif h+t == 10 and t > h:
+		return "guess fair"
+	elif h+t == 10 and h > t + 5:
+		return "guess cheater"
+	elif h+t == 15 and h < t+3:
+		return "guess fair"
+	elif h+t == 15 and h > t + 1:
+		return "guess cheater"
+	elif h+t == 20 and h < t+3:
+		return "guess fair"
+	elif h+t == 20 and h <= t+3:
+		return "guess cheater"
+	else:
+		return "flip"
 
 def flip(p_h):
 	if np.random.random() < p_h:
@@ -15,6 +37,7 @@ def get_identity():
 	else:
 		return (0.75, 0.25)
 
+
 def run_sim(verbose = False, keep_list = True, matrix = None):
 	H = 0
 	T = 0
@@ -27,13 +50,11 @@ def run_sim(verbose = False, keep_list = True, matrix = None):
 		flip_list = None
 		score_list = None
 
-	if matrix: M = matrix
-	else: M = build_E_flip_table()
-
 	p_h, p_t = get_identity()
 
 	while flips >= 0:
-		if E_flip(H, T, M) > E_guess(H, T) and flips != 0: # flip a coin
+		print(H, T, sample_strat(H,T))
+		if sample_strat(H, T) == "flip" and flips != 0: # flip a coin
 			flips -= 1
 			f = flip(p_h)
 			if f == "h":
@@ -44,7 +65,8 @@ def run_sim(verbose = False, keep_list = True, matrix = None):
 			if verbose: print("(H, T):", H, T)
 
 		else: # make a guess
-			if p_fair(H,T) > 0.5: # guess fair
+
+			if sample_strat(H,T) == "guess fair": # guess fair
 				if p_h == 0.5: # is fair
 					flips += 15
 					score += 1
@@ -75,7 +97,7 @@ def run_sim(verbose = False, keep_list = True, matrix = None):
 	return score, flip_list, score_list
 
 
-
 if __name__ == "__main__":
 	out, _, _ = run_sim(verbose = True, keep_list = False)
 	print("The final score is " + str(out) + "!")
+	# print(sample_strat(11, 4))
